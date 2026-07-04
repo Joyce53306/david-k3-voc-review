@@ -9,20 +9,16 @@
         * { font-family: 'Comic Sans MS', 'Comic Sans', cursive !important; box-sizing: border-box; }
         body { background: #fffbe6; text-align: center; padding: 20px; }
         
-        /* 1. 首頁風格 */
         #start-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 90vh; }
         .start-btn { padding: 20px 40px; font-size: 2rem; background: #feca57; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; }
         
         #lesson-menu, #game-area { display: none; }
         .lesson-btn { padding: 20px; margin: 8px; background: #fff; border: 4px solid #7dd3fc; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 1.2rem; }
         
-        /* 2. 遊戲區域 */
         #current-lesson { font-size: 3rem; color: #0284c7; margin: 10px 0; }
         .drop-zone { width: 320px; height: 120px; border: 4px dashed #f59e0b; margin: 20px auto; display: flex; align-items: center; justify-content: center; border-radius: 25px; background: #fffbeb; font-size: 1.2rem; }
         .word-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; max-width: 400px; margin: 20px auto; }
         .word-item { padding: 15px; background: #fff; border: 3px solid #ccc; border-radius: 15px; cursor: grab; font-size: 1.1rem; }
-        
-        /* 回饋文字 */
         #feedback-msg { font-size: 1.5rem; font-weight: bold; margin: 10px; min-height: 40px; }
     </style>
 </head>
@@ -33,7 +29,7 @@
         <button class="start-btn" onclick="showMenu()">點我開始玩！</button>
     </div>
 
-    <div id="lesson-menu"><h1>Choose a Lesson</h1></div>
+    <div id="lesson-menu"><h1>David K3 Voc Review</h1></div>
 
     <div id="game-area">
         <h2 id="current-lesson"></h2>
@@ -63,14 +59,8 @@
 
     function showMenu() {
         document.getElementById('start-screen').style.display = 'none';
-        const menu = document.getElementById('lesson-menu');
-        menu.style.display = 'block';
-        Object.keys(data).forEach(l => {
-            const btn = document.createElement('button');
-            btn.className = 'lesson-btn'; btn.innerText = l;
-            btn.onclick = () => startLesson(l);
-            menu.appendChild(btn);
-        });
+        document.getElementById('lesson-menu').style.display = 'block';
+        // 確保選單也顯示 David K3 Voc Review
     }
 
     function startLesson(lesson) {
@@ -80,6 +70,14 @@
         remainingWords = [...data[lesson]];
         nextWord();
     }
+
+    // 初始化選單按鈕
+    Object.keys(data).forEach(l => {
+        const btn = document.createElement('button');
+        btn.className = 'lesson-btn'; btn.innerText = l;
+        btn.onclick = () => startLesson(l);
+        document.getElementById('lesson-menu').appendChild(btn);
+    });
 
     function nextWord() {
         if (remainingWords.length === 0) {
