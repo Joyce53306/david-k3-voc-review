@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Listen & Drag Adventure</title>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <style>
+        /* 強制使用 Comic Sans */
+        * { font-family: 'Comic Sans MS', 'Comic Sans', cursive !important; box-sizing: border-box; }
+        body { background: #fffbe6; text-align: center; padding: 20px; }
+        
+        /* 選單按鈕 */
+        .lesson-btn { padding: 20px; margin: 8px; background: #fff; border: 4px solid #7dd3fc; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 1.2rem; }
+        
+        /* 遊戲區域 */
+        #game-area { display: none; }
+        .drop-zone { width: 320px; height: 120px; border: 4px dashed #f59e0b; margin: 20px auto; display: flex; align-items: center; justify-content: center; border-radius: 25px; background: #fffbeb; font-size: 1.2rem; }
+        .word-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
+        .word-item { padding: 15px 20px; background: #fff; border: 3px solid #ccc; border-radius: 15px; cursor: grab; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+    <h1 id="title">Choose a Lesson</h1>
+    <div id="lesson-menu"></div>
+
+    <div id="game-area">
+        <h2 id="current-lesson"></h2>
+        <button onclick="playTarget()" style="font-size: 2rem; padding: 10px 30px; border-radius: 20px; background: #a7f3d0; border: none;">🔊 Listen</button>
+        <div class="drop-zone" id="drop-zone">Drag the word here!</div>
+        <div class="word-container" id="word-container"></div>
+        <br>
+        <button onclick="location.reload()" style="padding:10px 20px; border-radius:15px;">🏠 Back Home</button>
+    </div>
+
+<script>
+    const data = {
+        "L1": ["chef", "teacher", "ballerina", "doctor", "pilot", "vet", "nurse"],
+        "L2": ["hit", "kick", "throw", "catch", "spike", "ball"],
+        "L3": ["take a bath", "comb hair", "brush teeth", "wash hands", "eat broccoli", "drink water"],
+        "L4": ["hungry", "polite", "rice", "soup", "dinosaur"],
+        "L5": ["windy", "rainy", "sunny", "snowy", "stormy", "cold", "hot"],
+        "L6": ["hippo", "giraffe", "kangaroo", "elephant", "monkey"],
+        "L7": ["cut with scissors", "color with markers", "paste with glue", "draw with crayons", "paint with watercolor"],
+        "L8": ["Christmas", "Easter", "Chinese New Year", "Thanksgiving", "Valentine’s Day", "Halloween"],
+        "L9": ["popsicle", "bag", "shoes", "hat", "buy"],
+        "L10": ["garden", "lollipop", "puppy", "turtle", "flower"]
+    };
+
+    let targetWord = "";
+
+    // 建立選單
+    const menu = document.getElementById('lesson-menu');
+    Object.keys(data).forEach(lesson => {
+        const btn = document.createElement('button');
+        btn.className = 'lesson-btn'; btn.innerText = lesson;
+        btn.onclick = () => startLesson(lesson);
+        menu.appendChild(btn);
+    });
+
+    function startLesson(lesson) {
+        document.getElementById('title').style.display = 'none';
+        menu.style.display = 'none';
+        document.getElementById('game-area').style.display = 'block';
+        document.getElementById('current-lesson').innerText = lesson;
+        
+        targetWord = data[lesson][Math.floor(Math.random() * data[lesson].length)];
+        
+        const container = document.getElementById('word-container');
+        data[lesson].forEach(word => {
+            const div = document.createElement('div');
+            div.className = 'word-item';
+            div.innerText = word;
+            container.appendChild(div);
+        });
+
+        // 啟動拖曳 (SortableJS)
+        new Sortable(container, { group: 'shared', animation: 150 });
+        new Sortable(document.getElementById('drop-zone'), {
+            group: 'shared',
+            onAdd: function (evt) {
+                if (evt.item.innerText === targetWord) {
+                    alert("Excellent! 🎉");
+                    location.reload();
+                } else {
+                    alert("Try again! 🙈");
+                    container.appendChild(evt.item);
+                }
+            }
+        });
+        playTarget();
+    }
+
+    function playTarget() {
+        const msg = new SpeechSynthesisUtterance(targetWord);
+        msg.lang = 'en-US';
+        msg.rate = 0.8;
+        window.speechSynthesis.speak(msg);
+    }
+</script>
+</body>
+</html>
