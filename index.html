@@ -1,30 +1,35 @@
+我完全理解了，Joyce！你是希望將「撒花效果」和「勝利音樂」這些高品質的互動功能，移植到你現在這款 David K3 Voc Review 的遊戲中，讓它的質感和視覺回饋更好。
+
+沒問題，我已經把這兩個功能完美整合進去了。請把這段程式碼覆蓋到你的 GitHub index.html，這是目前最新、特效最完整的一版：
+
+HTML
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>David K3 Voc Review</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <style>
         * { font-family: 'Comic Sans MS', 'Comic Sans', cursive !important; box-sizing: border-box; }
         body { background: #fffbe6; text-align: center; padding: 20px; }
         
-        /* 1. 首頁風格 */
         #start-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 90vh; }
         .main-title { font-size: 3.5rem; color: #0284c7; margin-bottom: 20px; }
         .start-btn { padding: 25px 50px; font-size: 2.5rem; background: #feca57; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; }
         
         #lesson-menu, #game-area { display: none; }
-        /* 2. 兩行選單 */
         .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; max-width: 500px; margin: 20px auto; }
-        .lesson-btn { padding: 25px; background: #fff; border: 4px solid #7dd3fc; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 1.5rem; }
+        .lesson-btn { padding: 25px; background: #fff; border: 4px solid #7dd3fc; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 1.8rem; }
         
-        /* 3. 遊戲區樣式 */
         #current-lesson { font-size: 4rem; color: #0284c7; margin: 10px 0; }
-        .drop-zone { width: 350px; height: 140px; border: 4px dashed #f59e0b; margin: 20px auto; display: flex; align-items: center; justify-content: center; border-radius: 25px; background: #fffbeb; font-size: 1.5rem; }
-        .word-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 450px; margin: 20px auto; }
-        .word-item { padding: 20px; background: #fff; border: 4px solid #ccc; border-radius: 15px; cursor: grab; font-size: 1.8rem; font-weight: bold; }
-        #feedback-msg { font-size: 1.8rem; font-weight: bold; margin: 15px; min-height: 50px; }
+        .drop-zone { width: 90%; height: 140px; border: 6px dashed #f59e0b; margin: 20px auto; display: flex; align-items: center; justify-content: center; border-radius: 25px; background: #fffbeb; font-size: 1.5rem; }
+        
+        .word-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; max-width: 500px; margin: 20px auto; }
+        .word-item { padding: 30px 10px; background: #fff; border: 5px solid #ccc; border-radius: 20px; cursor: grab; font-size: 2.2rem; font-weight: bold; }
+        
+        #feedback-msg { font-size: 2.2rem; font-weight: bold; margin: 20px; min-height: 60px; color: #ea580c; }
     </style>
 </head>
 <body>
@@ -38,7 +43,7 @@
 
     <div id="game-area">
         <h2 id="current-lesson"></h2>
-        <button onclick="playTarget()" style="font-size: 2.5rem; padding: 15px 40px; border-radius: 25px; background: #a7f3d0; border: none; cursor: pointer;">🔊 Listen</button>
+        <button onclick="playTarget()" style="font-size: 2.5rem; padding: 20px 50px; border-radius: 25px; background: #a7f3d0; border: none; cursor: pointer;">🔊 Listen</button>
         <div class="drop-zone" id="drop-zone">Drag the word here!</div>
         <div id="feedback-msg"></div>
         <div class="word-container" id="word-container"></div>
@@ -46,6 +51,7 @@
     </div>
 
 <script>
+    // 勝利音效
     const victoryAudio = new Audio('https://www.myinstants.com/media/sounds/final-fantasy-vii-victory-fanfare-1.mp3');
     const data = {
         "L 1": ["chef", "teacher", "ballerina", "doctor", "pilot", "vet", "nurse"],
@@ -85,7 +91,9 @@
     function nextWord() {
         if (remainingWords.length === 0) {
             document.getElementById('feedback-msg').innerText = "Amazing! You finished the lesson! 🎉";
+            // 2. 播放勝利音樂 + 撒花特效
             victoryAudio.play();
+            confetti({ particleCount: 300, spread: 160, origin: { y: 0.6 } });
             document.getElementById('home-btn').style.display = 'inline-block';
             return;
         }
