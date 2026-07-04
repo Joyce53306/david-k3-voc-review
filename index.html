@@ -3,35 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Listen & Drag Adventure</title>
+    <title>David K3 Voc Review</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <style>
-        /* 強制使用 Comic Sans */
         * { font-family: 'Comic Sans MS', 'Comic Sans', cursive !important; box-sizing: border-box; }
         body { background: #fffbe6; text-align: center; padding: 20px; }
         
-        /* 選單按鈕 */
         .lesson-btn { padding: 20px; margin: 8px; background: #fff; border: 4px solid #7dd3fc; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 1.2rem; }
         
-        /* 遊戲區域 */
         #game-area { display: none; }
+        /* 讓 L1 標題變超大 */
+        #current-lesson { font-size: 3rem; color: #0284c7; margin: 10px 0; }
+        
         .drop-zone { width: 320px; height: 120px; border: 4px dashed #f59e0b; margin: 20px auto; display: flex; align-items: center; justify-content: center; border-radius: 25px; background: #fffbeb; font-size: 1.2rem; }
-        .word-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
-        .word-item { padding: 15px 20px; background: #fff; border: 3px solid #ccc; border-radius: 15px; cursor: grab; font-size: 1.2rem; }
+        
+        /* 單字排成兩行 */
+        .word-container { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 15px; 
+            margin-top: 20px; 
+            max-width: 400px; 
+            margin-left: auto; 
+            margin-right: auto; 
+        }
+        .word-item { padding: 15px; background: #fff; border: 3px solid #ccc; border-radius: 15px; cursor: grab; font-size: 1.1rem; }
     </style>
 </head>
 <body>
 
-    <h1 id="title">Choose a Lesson</h1>
+    <h1 id="title">David K3 Voc Review</h1>
     <div id="lesson-menu"></div>
 
     <div id="game-area">
         <h2 id="current-lesson"></h2>
-        <button onclick="playTarget()" style="font-size: 2rem; padding: 10px 30px; border-radius: 20px; background: #a7f3d0; border: none;">🔊 Listen</button>
+        <button onclick="playTarget()" style="font-size: 2rem; padding: 10px 30px; border-radius: 20px; background: #a7f3d0; border: none; cursor: pointer;">🔊 Listen</button>
         <div class="drop-zone" id="drop-zone">Drag the word here!</div>
         <div class="word-container" id="word-container"></div>
         <br>
-        <button onclick="location.reload()" style="padding:10px 20px; border-radius:15px;">🏠 Back Home</button>
+        <button id="home-btn" onclick="location.reload()" style="display:none; padding:15px 30px; border-radius:20px; font-size:1.5rem; background:#fbbf24; border:none; cursor:pointer;">🏠 Back Home</button>
     </div>
 
 <script>
@@ -48,9 +58,9 @@
         "L10": ["garden", "lollipop", "puppy", "turtle", "flower"]
     };
 
+    let remainingWords = [];
     let targetWord = "";
 
-    // 建立選單
     const menu = document.getElementById('lesson-menu');
     Object.keys(data).forEach(lesson => {
         const btn = document.createElement('button');
@@ -65,32 +75,45 @@
         document.getElementById('game-area').style.display = 'block';
         document.getElementById('current-lesson').innerText = lesson;
         
-        targetWord = data[lesson][Math.floor(Math.random() * data[lesson].length)];
+        remainingWords = [...data[lesson]];
+        nextWord();
+    }
+
+    function nextWord() {
+        if (remainingWords.length === 0) {
+            alert("Amazing! You finished the lesson! 🎉");
+            document.getElementById('home-btn').style.display = 'inline-block';
+            return;
+        }
+        targetWord = remainingWords[Math.floor(Math.random() * remainingWords.length)];
         
         const container = document.getElementById('word-container');
-        data[lesson].forEach(word => {
+        container.innerHTML = '';
+        data[Object.keys(data).find(k => data[k].includes(targetWord))].forEach(word => {
             const div = document.createElement('div');
             div.className = 'word-item';
             div.innerText = word;
             container.appendChild(div);
         });
-
-        // 啟動拖曳 (SortableJS)
+        
+        // 重新初始化 Sortable 以確保容器更新
         new Sortable(container, { group: 'shared', animation: 150 });
-        new Sortable(document.getElementById('drop-zone'), {
-            group: 'shared',
-            onAdd: function (evt) {
-                if (evt.item.innerText === targetWord) {
-                    alert("Excellent! 🎉");
-                    location.reload();
-                } else {
-                    alert("Try again! 🙈");
-                    container.appendChild(evt.item);
-                }
-            }
-        });
         playTarget();
     }
+
+    new Sortable(document.getElementById('drop-zone'), {
+        group: 'shared',
+        onAdd: function (evt) {
+            if (evt.item.innerText === targetWord) {
+                remainingWords = remainingWords.filter(w => w !== targetWord);
+                evt.item.remove();
+                nextWord();
+            } else {
+                alert("Try again! 🙈");
+                document.getElementById('word-container').appendChild(evt.item);
+            }
+        }
+    });
 
     function playTarget() {
         const msg = new SpeechSynthesisUtterance(targetWord);
