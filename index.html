@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>David K3 Voc Review</title>
+    <title>Big Class Voc Review</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <style>
@@ -30,11 +30,14 @@
 <body>
 
     <div id="start-screen">
-        <h1 class="main-title">David K3 Voc Review</h1>
+        <h1 class="main-title">Big Class </h1>
         <button class="start-btn" onclick="showMenu()">點我開始玩！</button>
     </div>
 
-    <div id="lesson-menu"><h1>David K3 Voc Review</h1><div class="menu-grid" id="menu-grid"></div></div>
+    <div id="lesson-menu">
+        <h1>Big Class Voc Review</h1>
+        <div class="menu-grid" id="menu-grid"></div>
+    </div>
 
     <div id="game-area">
         <h2 id="current-lesson"></h2>
@@ -46,7 +49,6 @@
     </div>
 
 <script>
-    // 勝利音效
     const victoryAudio = new Audio('https://www.myinstants.com/media/sounds/final-fantasy-vii-victory-fanfare-1.mp3');
     const data = {
         "L 1": ["chef", "teacher", "ballerina", "doctor", "pilot", "vet", "nurse"],
@@ -86,7 +88,6 @@
     function nextWord() {
         if (remainingWords.length === 0) {
             document.getElementById('feedback-msg').innerText = "Amazing! You finished the lesson! 🎉";
-            // 2. 播放勝利音樂 + 撒花特效
             victoryAudio.play();
             confetti({ particleCount: 300, spread: 160, origin: { y: 0.6 } });
             document.getElementById('home-btn').style.display = 'inline-block';
